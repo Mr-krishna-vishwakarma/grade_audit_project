@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tamper-Evident Academic Audit Engine</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen p-8">
+    <div class="max-w-7xl mx-auto space-y-8">
+        
+        <!-- Header -->
+        <header class="flex justify-between items-center border-b border-slate-800 pb-5">
+            <div>
+                <h1 class="text-2xl font-bold text-white flex items-center gap-3">
+                    <i class="fa-solid fa-link text-indigo-400"></i>
+                    Academic Ledger & Cryptographic Audit Engine
+                </h1>
+                <p class="text-sm text-slate-400 mt-1">Append-only SHA-256 grade continuity and immutable record verification</p>
+            </div>
+            <div id="top-status-badge" class="px-4 py-2 rounded-full font-semibold text-xs tracking-wider border uppercase flex items-center gap-2 bg-slate-800 border-slate-700 text-slate-300">
+                <i class="fa-solid fa-spinner fa-spin"></i> Checking Integrity...
+            </div>
+        </header>
+
+        <!-- Top Grid: Student Card + Fast Action Controls -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <!-- Student Profile Card -->
+            <div class="bg-slate-800/60 p-6 rounded-xl border border-slate-700/60 shadow-lg">
+                <h2 class="text-xs uppercase font-semibold text-slate-400 tracking-wider">Student Profile</h2>
+                <div class="mt-4 space-y-2">
+                    <div class="text-xl font-bold text-white" id="stu-name">Loading...</div>
+                    <div class="text-sm text-slate-300 flex justify-between">
+                        <div class="text-sm text-slate-300 flex justify-between pt-2 border-t border-slate-700">
+                        <span>Cumulative GPA:</span> <span class="font-bold text-emerald-400 text-lg" id="stu-cgpa">-</span>
+                    </div>
+                    <!-- ADD THIS BUTTON -->
+                    <a href="/api/transcript/s1/export-pdf" target="_blank" class="mt-3 block text-center w-full bg-slate-700 hover:bg-slate-600 text-indigo-300 text-xs py-2 px-3 rounded-lg border border-slate-600 font-medium transition">
+                        <i class="fa-solid fa-file-pdf mr-1"></i> Download Verified Transcript PDF
+                    </a>
+                        <span>Roll Number:</span> <span class="font-mono text-indigo-300" id="stu-roll">-</span>
+                    </div>
+                    <div class="text-sm text-slate-300 flex justify-between">
+                        <span>Department:</span> <span id="stu-dept">-</span>
+                    </div>
+                    <div class="text-sm text-slate-300 flex justify-between pt-2 border-t border-slate-700">
+                        <span>Cumulative GPA:</span> <span class="font-bold text-emerald-400 text-lg" id="stu-cgpa">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grade Amendment Control -->
+            <div class="bg-slate-800/60 p-6 rounded-xl border border-slate-700/60 shadow-lg">
+                <h2 class="text-xs uppercase font-semibold text-indigo-400 tracking-wider">Submit Grade Revision</h2>
+                <form id="update-grade-form" class="mt-3 space-y-3">
+                    <div class="grid grid-cols-2 gap-2">
+                        <select id="new-grade" class="bg-slate-900 border border-slate-700 text-sm rounded-lg p-2 text-white">
+                            <option value="A+|10.00">A+ (10.0)</option>
+                            <option value="A|9.00">A (9.0)</option>
+                            <option value="B+|8.00">B+ (8.0)</option>
+                            <option value="B|7.00">B (7.0)</option>
+                        </select>
+                        <input type="text" id="faculty-name" value="Prof. Sharma" class="bg-slate-900 border border-slate-700 text-sm rounded-lg p-2 text-white" placeholder="Faculty User">
+                    </div>
+                    <input type="text" id="update-reason" placeholder="Mandatory Institutional Reason" required class="w-full bg-slate-900 border border-slate-700 text-sm rounded-lg p-2 text-white">
+                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs py-2 rounded-lg transition">
+                        Authorize & Cryptographically Sign
+                    </button>
+                </form>
+            </div>
+
+            <!-- VIVA TAMPER PANEL -->
+            <div class="bg-red-950/20 border border-red-900/60 p-6 rounded-xl shadow-lg relative overflow-hidden">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xs uppercase font-semibold text-red-400 tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Viva Attack Simulator
+                    </h2>
+                    <span class="text-[10px] bg-red-900/40 text-red-300 px-2 py-0.5 rounded border border-red-800">Demo Only</span>
+                </div>
+                <p class="text-xs text-slate-400 mt-2">Bypasses the application layer and illicitly overwrites an audit node in database storage.</p>
+                <div class="mt-4 flex gap-2">
+                    <button onclick="tamperBlock(1, 'A+')" class="flex-1 bg-red-600/80 hover:bg-red-600 text-white text-xs py-2 rounded-lg font-medium transition">
+                        Inject Rogue Data (Block #1)
+                    </button>
+                    <button onclick="runVerification()" class="flex-1 bg-emerald-600/80 hover:bg-emerald-600 text-white text-xs py-2 rounded-lg font-medium transition">
+                        Run Audit
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Verification Health & Traversal Diagnostics -->
+        <div class="bg-slate-800/40 rounded-xl border border-slate-700/60 p-6">
+            <h2 class="text-base font-semibold text-white mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-microchip text-slate-400"></i> Cryptographic Audit Verification Diagnostics
+            </h2>
+            <div id="verification-nodes" class="space-y-3 font-mono text-xs">
+                <!-- Injected via JavaScript -->
+            </div>
+        </div>
+
+        <!-- Timeline: Immutable History -->
+        <div class="bg-slate-800/40 rounded-xl border border-slate-700/60 p-6">
+            <h2 class="text-base font-semibold text-white mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-timeline text-slate-400"></i> Student Immutable Audit Trail
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-xs">
+                    <thead>
+                        <tr class="border-b border-slate-700 text-slate-400">
+                            <th class="py-2 px-3">Audit ID</th>
+                            <th class="py-2 px-3">Action</th>
+                            <th class="py-2 px-3">Course</th>
+                            <th class="py-2 px-3">Grade</th>
+                            <th class="py-2 px-3">Reason / Context</th>
+                            <th class="py-2 px-3">Signed By</th>
+                            <th class="py-2 px-3">Hash Linkage (Prev ➔ Curr)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="timeline-body" class="divide-y divide-slate-800 text-slate-300">
+                        <!-- Injected via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const STUDENT_ID = "s1";
+        let activeGradeId = "g1";
+
+        async function loadAll() {
+            await fetchTranscript();
+            await fetchTimeline();
+            await runVerification();
+        }
+
+        async function fetchTranscript() {
+            const res = await fetch(`/api/transcript/${STUDENT_ID}`);
+            const data = await res.json();
+            document.getElementById('stu-name').innerText = data.student_info.name;
+            document.getElementById('stu-roll').innerText = data.student_info.roll_number;
+            document.getElementById('stu-dept').innerText = data.student_info.department;
+            document.getElementById('stu-cgpa').innerText = data.student_info.cgpa;
+
+            const badge = document.getElementById('top-status-badge');
+            if (data.status === "CRYPTOGRAPHICALLY_VERIFIED") {
+                badge.className = "px-4 py-2 rounded-full font-semibold text-xs tracking-wider border uppercase flex items-center gap-2 bg-emerald-950/40 border-emerald-500/50 text-emerald-300";
+                badge.innerHTML = '<i class="fa-solid fa-shield-check"></i> Cryptographically Verified';
+            } else {
+                badge.className = "px-4 py-2 rounded-full font-semibold text-xs tracking-wider border uppercase flex items-center gap-2 bg-red-950/60 border-red-500 text-red-300";
+                badge.innerHTML = '<i class="fa-solid fa-shield-virus"></i> Tampering Detected';
+            }
+
+            if (data.grades.length > 0) {
+                activeGradeId = data.grades[0].grade_id;
+            }
+        }
+
+        async function fetchTimeline() {
+            const res = await fetch(`/api/timeline/${STUDENT_ID}`);
+            const data = await res.json();
+            const tbody = document.getElementById('timeline-body');
+            tbody.innerHTML = "";
+
+            data.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="py-3 px-3 font-mono text-slate-400">#${row.audit_id}</td>
+                    <td class="py-3 px-3 font-semibold ${row.operation === 'INSERT' ? 'text-blue-400' : 'text-amber-400'}">${row.operation}</td>
+                    <td class="py-3 px-3">${row.course_code}</td>
+                    <td class="py-3 px-3 font-bold text-white">${row.letter_grade} (${row.grade_points})</td>
+                    <td class="py-3 px-3 text-slate-300">${row.reason}</td>
+                    <td class="py-3 px-3 text-slate-400">${row.modified_by}</td>
+                    <td class="py-3 px-3 font-mono text-[10px] text-slate-500">
+                        <span title="${row.prev_hash}">${row.prev_hash.substring(0, 8)}...</span> ➔ 
+                        <span class="text-indigo-400" title="${row.row_hash}">${row.row_hash.substring(0, 8)}...</span>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function runVerification() {
+            const res = await fetch(`/api/verify/${STUDENT_ID}`);
+            const data = await res.json();
+            const container = document.getElementById('verification-nodes');
+            container.innerHTML = "";
+
+            data.chain_nodes.forEach(node => {
+                const isOk = node.status === "VERIFIED";
+                const div = document.createElement('div');
+                div.className = `p-3 rounded-lg border ${isOk ? 'bg-slate-900/60 border-slate-700/80' : 'bg-red-950/40 border-red-500/80'}`;
+                div.innerHTML = `
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="font-bold ${isOk ? 'text-slate-200' : 'text-red-400'}">
+                            <i class="fa-solid ${isOk ? 'fa-circle-check text-emerald-400' : 'fa-circle-xmark text-red-500'}"></i>
+                            Node #${node.audit_id} (${node.operation})
+                        </span>
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${isOk ? 'bg-emerald-950 text-emerald-400 border border-emerald-800' : 'bg-red-900 text-red-200 border border-red-700'}">
+                            ${node.status}
+                        </span>
+                    </div>
+                    <div class="text-[11px] text-slate-400 grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
+                        <div><strong class="text-slate-500">Stored:</strong> <span class="break-all">${node.stored_hash}</span></div>
+                        <div><strong class="text-slate-500">Recomputed:</strong> <span class="break-all ${isOk ? 'text-slate-400' : 'text-red-300 font-bold'}">${node.recalculated_hash}</span></div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        document.getElementById('update-grade-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const [grade, points] = document.getElementById('new-grade').value.split('|');
+            const reason = document.getElementById('update-reason').value;
+            const user = document.getElementById('faculty-name').value;
+
+            await fetch('/api/grades/update', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    grade_id: activeGradeId,
+                    letter_grade: grade,
+                    grade_points: parseFloat(points),
+                    audit_reason: reason,
+                    user: user
+                })
+            });
+
+            document.getElementById('update-reason').value = "";
+            await loadAll();
+        });
+
+        async function tamperBlock(auditId, forgedGrade) {
+            await fetch('/api/demo/tamper', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ audit_id: auditId, forged_grade: forgedGrade })
+            });
+            await loadAll();
+        }
+
+        loadAll();
+    </script>
+</body>
+</html>
